@@ -1,0 +1,51 @@
+{
+  "kind": "merge",
+  "title": "Merge",
+  "ports": {
+    "inputs": [
+      {
+        "id": 1,
+        "name": "input_1",
+        "title": "In 1",
+        "accepts": [
+          "message/*"
+        ],
+        "multiplicity": "many",
+        "required": false,
+        "execution_requirement": "required_for_execution"
+      },
+      {
+        "id": 2,
+        "name": "input_2",
+        "title": "In 2",
+        "accepts": [
+          "message/*"
+        ],
+        "multiplicity": "many",
+        "required": false,
+        "execution_requirement": "required_for_execution"
+      }
+    ],
+    "outputs": [
+      {
+        "id": 1,
+        "name": "out",
+        "title": "Out",
+        "emits": [
+          "message/*"
+        ],
+        "multiplicity": "many"
+      }
+    ]
+  },
+  "config": {
+    "separator": "\n\n"
+  },
+  "runtime": {
+    "initial_state": "waiting",
+    "runtime_executable": true,
+    "active_worker": true,
+    "centralized_executor": "generic",
+    "centralized_dependency_mode": "all_inputs"
+  }
+}
