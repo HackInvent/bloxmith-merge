@@ -31,18 +31,6 @@ class MergeBlock(BlockDefinition):
     """Autonomous block implementation for `MergeBlock`."""
     kind = "merge"
 
-    def ui_assets(self, surface: str = "modal") -> list[dict[str, str]]:
-        """Return block-owned frontend assets for the requested UI surface.
-
-        Args:
-            surface: UI surface requesting assets.
-        """
-        if surface == "modal":
-            return [{"kind": "js", "path": "assets/js/block_modal.js"}]
-        if surface != "inspector_panel":
-            return []
-        return [{"kind": "css", "path": "assets/css/inspector_panel.css"}]
-
     def render_node_card(self, *, node: dict[str, Any], payload: dict[str, Any] | None = None) -> dict[str, Any]:
         """Render the Merge canvas card body from the block-owned template."""
 

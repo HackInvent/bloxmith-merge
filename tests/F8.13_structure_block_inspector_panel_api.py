@@ -21,38 +21,47 @@ exposé. Aucune donnée utilisateur n'est modifiée hors du serveur de test.
 
 from __future__ import annotations
 
+from urllib.parse import quote
 from urllib.request import urlopen
 
 from ui_smoke_common import expect, http_json, isolated_server
+from block_test_packages import install_test_package, release_key, surface_payload
 
 
 def assert_structure_panel(server, kind: str, expected_text: str) -> None:
+    """Check one structure block's own surfaces through the installed release contract."""
+    # Surfaces are release assets: the host serves what model.json declares, and the
+    # editor imports them as ES modules. A bundled kind would serve nothing.
+    model = install_test_package(server, kind)
+    key = quote(release_key(model), safe="")
     node = {
         "id": f"{kind}-1",
         "kind": kind,
         "type": kind,
         "title": kind,
+        "block_version": model["version"],
         "inputs": [{"id": 1, "name": "a"}, {"id": 2, "name": "b"}],
     }
-    rendered = http_json(server.base_url, f"/api/blocks/{kind}/inspector-panel", method="POST", payload={"node": node})
+    rendered = surface_payload(server, model, node, "inspector_panel")
     html = str(rendered.get("html") or "")
     expect("data-structure-inspector-root" in html, f"Le HTML inspecteur {kind} doit venir du bloc.")
     expect("2 input(s)" in html, f"Le panneau {kind} doit afficher le nombre d'inputs.")
     expect(expected_text in html, f"Le panneau {kind} doit afficher le comportement attendu.")
-    assets = rendered.get("assets") or []
-    expect({"kind": "css", "path": "assets/css/inspector_panel.css"} in assets, f"CSS {kind} manquant.")
-    with urlopen(f"{server.base_url}/api/blocks/{kind}/assets/assets/css/inspector_panel.css", timeout=5) as response:
+    css_path = next(asset["path"] for asset in rendered["assets"] if asset["kind"] == "css")
+    with urlopen(f"{server.base_url}/api/blocks/{key}/assets/{css_path}", timeout=5) as response:
         body = response.read().decode("utf-8")
     expect("structure" in body.lower(), f"Asset CSS inspecteur {kind} non servi.")
+    expect(f'[data-block-release="{release_key(model)}"]' in body,
+           f"Le CSS {kind} doit être scopé à sa release.")
 
-    modal = http_json(server.base_url, f"/api/blocks/{kind}/modal", method="POST", payload={"node": node})
+    modal = surface_payload(server, model, node, "modal")
     modal_html = str(modal.get("html") or "")
-    modal_assets = modal.get("assets") or []
     expect('data-block-runtime-refresh="autonomous"' in modal_html, f"Le modal {kind} doit gerer son refresh runtime.")
-    expect({"kind": "js", "path": "assets/js/block_modal.js"} in modal_assets, f"JS modal {kind} manquant.")
-    with urlopen(f"{server.base_url}/api/blocks/{kind}/assets/assets/js/block_modal.js", timeout=5) as response:
+    js_path = next(asset["path"] for asset in modal["assets"] if asset["kind"] == "js")
+    with urlopen(f"{server.base_url}/api/blocks/{key}/assets/{js_path}", timeout=5) as response:
         modal_js = response.read().decode("utf-8")
-    expect(f"registry.{kind}" in modal_js, f"Asset JS modal {kind} non servi.")
+    expect("export function mount" in modal_js, f"Le module modal {kind} doit exporter mount.")
+    expect("CWBlockUiBlocks" not in modal_js, f"Le module modal {kind} ne doit plus utiliser le registre global.")
 
 
 def main() -> None:
