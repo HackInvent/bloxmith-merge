@@ -106,7 +106,7 @@ class MergeBlock(BlockDefinition):
         return BlockRuntimeResult(
             status="success" if merged_value else "skipped",
             outputs=outputs,
-            logs=[f"[merge] {context.node_id}: {len(input_parts)} input(s) non vide(s) agrege(s)."],
+            logs=[f"[merge] {context.node_id}: {len(input_parts)} non-empty input(s) merged."],
             last_message=merged_value,
             content_type=TEXT_PLAIN,
             worker_received=merged_value or "-",

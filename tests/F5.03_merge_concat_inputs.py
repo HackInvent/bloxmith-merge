@@ -99,16 +99,16 @@ def _verify_runtime_mode(runtime_mode: str) -> None:
         expected = "alpha\n\nbeta"
         expect(
             run.get("output_values", {}).get("merge-1:1", {}).get("value") == expected,
-            f"La concaténation merge est incorrecte en {runtime_mode}.",
+            f"The merge concatenation is wrong in {runtime_mode}.",
         )
         expect(
             run.get("results", {}).get("merge-1", {}).get("aggregated_inputs") == 2,
-            f"Merge doit agréger deux inputs en {runtime_mode}.",
+            f"Merge must aggregate two inputs in {runtime_mode}.",
         )
         if runtime_mode == "zeromq_active":
             expect(
                 run.get("results", {}).get("merge-1", {}).get("transport") == "zeromq_active",
-                "Merge actif ne doit pas utiliser le moteur centralisé.",
+                "Active Merge must not use the centralized engine.",
             )
 
 

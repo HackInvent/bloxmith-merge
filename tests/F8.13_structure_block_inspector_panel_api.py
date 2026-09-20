@@ -7,11 +7,11 @@
 # Created Date: 2024-07-24
 # -----------------------------------------------------------------------------
 
-"""F8.13 - UI modulaire des panneaux inspecteur Merge et Event OR.
+"""F8.13 - Modular UI of the Merge and Event OR inspector panels.
 
-Le test démarre un serveur isolé, demande le rendu des panneaux inspecteur
-`merge` et `event_or` depuis leurs `block.py`, puis vérifie que leur CSS est
-exposé. Aucune donnée utilisateur n'est modifiée hors du serveur de test.
+The test starts an isolated server, renders the `merge` and `event_or` inspector
+panels from their own `block.py`, then checks that their CSS is exposed. No user
+data is modified outside the test server.
 """
 
 # Test cases:
@@ -44,24 +44,24 @@ def assert_structure_panel(server, kind: str, expected_text: str) -> None:
     }
     rendered = surface_payload(server, model, node, "inspector_panel")
     html = str(rendered.get("html") or "")
-    expect("data-structure-inspector-root" in html, f"Le HTML inspecteur {kind} doit venir du bloc.")
-    expect("2 input(s)" in html, f"Le panneau {kind} doit afficher le nombre d'inputs.")
-    expect(expected_text in html, f"Le panneau {kind} doit afficher le comportement attendu.")
+    expect("data-structure-inspector-root" in html, f"The {kind} inspector HTML must come from the block.")
+    expect("2 input(s)" in html, f"The {kind} panel must show the input count.")
+    expect(expected_text in html, f"The {kind} panel must show the expected behavior.")
     css_path = next(asset["path"] for asset in rendered["assets"] if asset["kind"] == "css")
     with urlopen(f"{server.base_url}/api/blocks/{key}/assets/{css_path}", timeout=5) as response:
         body = response.read().decode("utf-8")
-    expect("structure" in body.lower(), f"Asset CSS inspecteur {kind} non servi.")
+    expect("structure" in body.lower(), f"{kind} inspector CSS asset not served.")
     expect(f'[data-block-release="{release_key(model)}"]' in body,
-           f"Le CSS {kind} doit être scopé à sa release.")
+           f"The {kind} CSS must be scoped to its release.")
 
     modal = surface_payload(server, model, node, "modal")
     modal_html = str(modal.get("html") or "")
-    expect('data-block-runtime-refresh="autonomous"' in modal_html, f"Le modal {kind} doit gerer son refresh runtime.")
+    expect('data-block-runtime-refresh="autonomous"' in modal_html, f"The {kind} modal must own its runtime refresh.")
     js_path = next(asset["path"] for asset in modal["assets"] if asset["kind"] == "js")
     with urlopen(f"{server.base_url}/api/blocks/{key}/assets/{js_path}", timeout=5) as response:
         modal_js = response.read().decode("utf-8")
-    expect("export function mount" in modal_js, f"Le module modal {kind} doit exporter mount.")
-    expect("CWBlockUiBlocks" not in modal_js, f"Le module modal {kind} ne doit plus utiliser le registre global.")
+    expect("export function mount" in modal_js, f"The {kind} modal module must export mount.")
+    expect("CWBlockUiBlocks" not in modal_js, f"The {kind} modal module must no longer use the global registry.")
 
 
 def main() -> None:
