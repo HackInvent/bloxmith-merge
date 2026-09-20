@@ -7,10 +7,10 @@
 # Created Date: 2024-06-17
 # -----------------------------------------------------------------------------
 
-"""F5.03 - Merge de deux inputs.
+"""F5.03 - Merge of two inputs.
 
-Le test lance deux sources texte vers un bloc `merge`, puis vérifie que la
-sortie concatène les deux inputs avec le séparateur configuré.
+The test sends two text sources into a `merge` block, then checks that the
+output joins both inputs with the configured separator.
 """
 
 # Test cases:
@@ -70,8 +70,8 @@ def _verify_empty_merge_skips() -> None:
             root_dir=Path.cwd(),
         )
     )
-    expect(result.status == "skipped", "Merge sans input non vide doit retourner skipped.")
-    expect(result.outputs and result.outputs[0].value == "", "Merge skipped doit garder une sortie vide compatible.")
+    expect(result.status == "skipped", "Merge with no non-empty input must return skipped.")
+    expect(result.outputs and result.outputs[0].value == "", "A skipped merge must keep a compatible empty output.")
 
 
 def _verify_runtime_mode(runtime_mode: str) -> None:
@@ -94,8 +94,8 @@ def _verify_runtime_mode(runtime_mode: str) -> None:
         )
         created = create_run_api(server, document, runtime_mode=runtime_mode)
         run = wait_for_run_terminal(server, str(created.get("run_id") or ""), timeout_sec=20)
-        expect(run.get("status") == "success", f"Le run merge {runtime_mode} doit réussir.")
-        expect(run.get("runtime_mode") == runtime_mode, f"Le run merge doit rester en {runtime_mode}.")
+        expect(run.get("status") == "success", f"The merge {runtime_mode} run must succeed.")
+        expect(run.get("runtime_mode") == runtime_mode, f"The merge run must stay in {runtime_mode}.")
         expected = "alpha\n\nbeta"
         expect(
             run.get("output_values", {}).get("merge-1:1", {}).get("value") == expected,

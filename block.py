@@ -41,7 +41,7 @@ class MergeBlock(BlockDefinition):
             node_classes=["merge-node"],
             replacements={
                 "title": node.get("title") or self.default_title(),
-                "preview": f"{input_count} entree{'s' if input_count > 1 else ''} -> 1 sortie",
+                "preview": f"{input_count} input{'s' if input_count > 1 else ''} -> 1 output",
                 "mode": "aggregate",
             },
         )
@@ -59,7 +59,7 @@ class MergeBlock(BlockDefinition):
             template=(
                 template
                 .replace("{{ source }}", escape(f"{len(inputs)} input(s)"))
-                .replace("{{ description }}", escape("Agrège les inputs non vides, dans l'ordre des ports, avec deux retours ligne."))
+                .replace("{{ description }}", escape("Joins the non-empty inputs, in port order, with two line breaks."))
             ),
             node={**node, "type": self.kind, "kind": self.kind},
             payload=payload,

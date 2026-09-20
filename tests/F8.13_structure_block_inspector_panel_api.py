@@ -66,8 +66,8 @@ def assert_structure_panel(server, kind: str, expected_text: str) -> None:
 
 def main() -> None:
     with isolated_server() as server:
-        assert_structure_panel(server, "merge", "Agrège les inputs")
-        assert_structure_panel(server, "event_or", "Relaie uniquement")
+        assert_structure_panel(server, "merge", "Joins the non-empty inputs")
+        assert_structure_panel(server, "event_or", "Relays only")
     print("[ok] F8.13_structure_block_inspector_panel_api")
 
 
