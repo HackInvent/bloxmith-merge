@@ -1,0 +1,10 @@
+{
+  "block.merge.model.title": "Fusion",
+  "block.merge.pill": "Fusion",
+  "block.merge.preview.one": "{count} entrée -> 1 sortie",
+  "block.merge.preview.other": "{count} entrées -> 1 sortie",
+  "block.merge.mode": "agrégation",
+  "block.merge.sources_label": "Sources",
+  "block.merge.behavior_label": "Comportement",
+  "block.merge.behavior_description": "Assemble les entrées non vides, dans l'ordre des ports, avec deux sauts de ligne."
+}

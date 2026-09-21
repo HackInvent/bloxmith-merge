@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import json
 from html import escape
 from typing import Any
 
@@ -42,6 +43,8 @@ class MergeBlock(BlockDefinition):
             replacements={
                 "title": node.get("title") or self.default_title(),
                 "preview": f"{input_count} input{'s' if input_count > 1 else ''} -> 1 output",
+                # The card text is countable, so the browser needs the count to pick a plural form.
+                "preview_params": escape(json.dumps({"count": input_count}), quote=True),
                 "mode": "aggregate",
             },
         )
