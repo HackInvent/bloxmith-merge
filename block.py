@@ -41,11 +41,15 @@ class MergeBlock(BlockDefinition):
             node_classes=["merge-node"],
             replacements={
                 "title": node.get("title") or self.default_title(),
-                "preview": f"{input_count} input{'s' if input_count > 1 else ''} -> 1 output",
+                "preview": self.translate(
+                    "block.merge.preview",
+                    {"count": input_count},
+                    fallback=f"{input_count} input{'s' if input_count > 1 else ''} -> 1 output",
+                ),
                 # The card text is countable: the count travels next to the marker so the
-                # browser picks the plural form of the active language on its own.
+                # browser also follows a language change without asking the server again.
                 "preview_count": input_count,
-                "mode": "aggregate",
+                "mode": self.translate("block.merge.mode", fallback="aggregate"),
             },
         )
 
@@ -62,7 +66,10 @@ class MergeBlock(BlockDefinition):
             template=(
                 template
                 .replace("{{ source }}", escape(f"{len(inputs)} input(s)"))
-                .replace("{{ description }}", escape("Joins the non-empty inputs, in port order, with two line breaks."))
+                .replace("{{ description }}", escape(self.translate(
+                    "block.merge.behavior_description",
+                    fallback="Joins the non-empty inputs, in port order, with two line breaks.",
+                )))
             ),
             node={**node, "type": self.kind, "kind": self.kind},
             payload=payload,
